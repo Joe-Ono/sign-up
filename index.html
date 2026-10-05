@@ -1,715 +1,630 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>きずな｜イベント案内・参加・アンケート（LIFFモック）</title>
-    <style>
-        :root {
-            --line-green: #06C755;
-            --line-green-dark: #05A84A;
-            --bg: #F7F7F7;
-            --card: #FFFFFF;
-            --text: #1a1a1a;
-            --muted: #666666;
-            --border: #D0D0D0;
-            --focus: rgba(6, 199, 85, 0.25);
-            --warn-bg: #FFF4E5;
-            --warn-bd: #E0A96D;
-            --warn-tx: #8a5a1a;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>KIZUNA 盛岡市版｜イベント案内・申込・アンケート（統合モック）</title>
+<style>
+  :root{
+    --bg:#f5f6f8; --card:#fff; --text:#000; --muted:#333; --radius:12px;
+    --green:#1a5d3a; --blue:#1e4a7a; --gray:#2d3748;
+    --kizuna:#06C755; --kizuna-dark:#05A84A; --focus:rgba(6,199,85,0.3);
+    --shadow:0 6px 18px rgba(0,0,0,0.12);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:"Meiryo","メイリオ","Hiragino Kaku Gothic ProN","Yu Gothic Medium",sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.7; display:flex; justify-content:center; font-size:18px;
+  }
+  .app{width:100%; max-width:440px; padding:16px 12px 28px;}
+  header{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+  h1{font-size:22px; margin:0; font-weight:700;}
+  .pill{padding:8px 12px; border-radius:999px; background:#d0d5dc; color:#1a1a1a; font-size:14px; font-weight:600; white-space:nowrap;}
+  .card{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; margin-bottom:14px; overflow:hidden;}
+  label{font-size:16px; color:#1a1a1a; margin-bottom:6px; display:block; font-weight:600;}
+  select,button{width:100%; padding:12px 14px; border-radius:10px; border:2px solid #4a5568; font-size:17px; background:#fff; color:#000; font-weight:500;}
+  .btn{background:var(--blue); color:#fff; border:none; cursor:pointer; font-weight:700; font-size:18px; padding:14px;}
+  .btn.secondary{background:#e2e8f0; color:#000; border:2px solid #4a5568; font-size:16px; font-weight:600;}
+  .btn:active{opacity:.85;}
+  .btn-kizuna{width:100%; padding:14px; border:none; border-radius:10px; background:var(--kizuna); color:#fff; font-weight:700; font-size:18px; cursor:pointer; margin-top:10px; box-shadow:0 4px 12px rgba(6,199,85,.35);}
+  .btn-kizuna.ghost{background:#fff; color:var(--kizuna-dark); border:2px solid var(--kizuna); box-shadow:none;}
+  .btn-kizuna:active{opacity:.9;}
+  .dropdown{position:relative;}
+  .dropdown-btn{width:100%; padding:12px 14px; border-radius:10px; border:2px solid #4a5568; font-size:17px; background:#fff; color:#000; text-align:left; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:8px; font-weight:500;}
+  .dropdown-panel{position:absolute; top:100%; left:0; right:0; background:#fff; border:2px solid #4a5568; border-radius:10px; box-shadow:var(--shadow); padding:12px; margin-top:6px; z-index:5; display:none; max-height:240px; overflow-y:auto;}
+  .dropdown.open .dropdown-panel{display:block;}
+  .dropdown-item{display:flex; align-items:center; gap:10px; padding:8px 4px; font-size:16px; cursor:pointer; color:#000;}
+  .dropdown-item input{width:20px; height:20px;}
+  .tabs{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:14px;}
+  .tab{padding:12px 14px; border-radius:12px; text-align:center; font-weight:700; border:2px solid #4a5568; background:#fff; cursor:pointer; font-size:17px; color:#000;}
+  .tab.active{background:#000; color:#fff; border-color:#000;}
+  .event{display:grid; gap:8px;}
+  .badge{display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:999px; font-size:15px; color:#fff; font-weight:700; width:fit-content;}
+  .badge.all{background:var(--green);}
+  .badge.district{background:var(--blue);}
+  .event-title{font-size:20px; font-weight:700; margin:0; color:#000;}
+  .meta{color:#1a1a1a; font-size:16px; font-weight:500;}
+  .place{font-size:16px; color:#1a1a1a; font-weight:500;}
+  .chips{display:flex; gap:8px; flex-wrap:wrap;}
+  .chip{padding:6px 10px; border-radius:10px; background:#e2e8f0; color:#1a1a1a; font-size:14px; font-weight:600;}
+  .chip.state{background:#E8F8EE; color:var(--kizuna-dark);}
+  .actions{display:flex; gap:10px; margin-top:4px;}
+  .btn-register{background:var(--blue); color:#fff; border:none; cursor:pointer; font-weight:700; font-size:16px; padding:10px 16px; border-radius:8px; margin-top:6px; width:100%;}
+  .btn-register.registered{background:#dc3545;}
+  .btn-register:active{opacity:.9;}
+  .calendar{display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin-top:10px;}
+  .cal-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:6px; width:100%;}
+  .cal-head .btn.secondary{padding:6px 8px; font-size:13px; width:55px; flex-shrink:0; white-space:nowrap;}
+  .cal-head > div{font-size:20px; font-weight:700; text-align:center; flex:1 1 0; min-width:0;}
+  .weekday{text-align:center; font-size:15px; color:#1a1a1a; font-weight:700; padding:8px 0;}
+  .day{min-height:85px; padding:6px 2px; border-radius:10px; background:#fff; border:2px solid #d0d5dc; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:4px; cursor:pointer;}
+  .day:hover{background:#f0f4f8;}
+  .day.selected{background:#e3f2fd; border-color:var(--blue);}
+  .day.out{background:#f8f9fa; color:#9aa5b1; border-color:#e2e8f0;}
+  .day-num{font-weight:700; font-size:18px; color:#000;}
+  .day.out .day-num{color:#9aa5b1;}
+  .calendar-legend{text-align:center; font-size:15px; color:#1a1a1a; font-weight:600; margin-bottom:10px; padding:8px; background:#f0f4f8; border-radius:8px; border:1px solid #d0d5dc;}
+  .day-event-counts{display:flex; flex-direction:column; align-items:center; gap:2px; margin-top:2px;}
+  .event-count-blue{color:var(--blue); font-size:20px; font-weight:700; line-height:1.1;}
+  .event-count-red{color:#dc3545; font-size:20px; font-weight:700; line-height:1.1;}
+  .day-events-list{margin-top:12px; display:none; width:100%;}
+  .day-events-list.show{display:block;}
+  .day-events-list .event-card{background:#fff; border:2px solid #4a5568; border-radius:10px; padding:12px; margin-bottom:10px;}
+  .empty{text-align:center; color:#1a1a1a; padding:20px 0; font-size:17px; font-weight:500;}
+  .footer-note{text-align:center; color:#1a1a1a; font-size:14px; margin-top:12px; font-weight:500;}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            font-size: 18px;
-            line-height: 1.55;
-            min-height: 100vh;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .app-header {
-            background: var(--line-green);
-            color: #fff;
-            padding: 14px 18px 16px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 18px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .app-header small {
-            display: block;
-            font-weight: 500;
-            font-size: 13px;
-            opacity: 0.92;
-            margin-top: 4px;
-        }
-
-        .who {
-            background: #E8F8EE;
-            color: var(--line-green-dark);
-            font-size: 13px;
-            text-align: center;
-            padding: 6px 10px;
-            font-weight: 700;
-        }
-
-        main {
-            max-width: 540px;
-            margin: 0 auto;
-            padding: 16px 16px 32px;
-        }
-
-        .screen {
-            display: none;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        .lead {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 14px 16px;
-            margin-bottom: 16px;
-            font-size: 15px;
-            color: var(--muted);
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 16px 18px;
-            margin-bottom: 14px;
-        }
-
-        .card.tap {
-            cursor: pointer;
-        }
-
-        .card.tap:active {
-            transform: scale(0.995);
-        }
-
-        .ev-title {
-            font-size: 19px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .ev-meta {
-            font-size: 15px;
-            color: var(--muted);
-        }
-
-        .ev-meta b {
-            color: var(--text);
-        }
-
-        .pill {
-            display: inline-block;
-            font-size: 12px;
-            font-weight: 700;
-            border-radius: 6px;
-            padding: 3px 8px;
-            margin-top: 8px;
-        }
-
-        .pill.tag {
-            background: #E8F8EE;
-            color: var(--line-green-dark);
-        }
-
-        .pill.applied {
-            background: #E3F0FF;
-            color: #1a5fb4;
-        }
-
-        .pill.checked {
-            background: #E8F8EE;
-            color: var(--line-green-dark);
-        }
-
-        .pill.done {
-            background: #eee;
-            color: #555;
-        }
-
-        .q {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 16px 18px;
-            margin-bottom: 12px;
-        }
-
-        .q-num {
-            display: inline-block;
-            background: var(--line-green);
-            color: #fff;
-            font-weight: 700;
-            border-radius: 6px;
-            padding: 1px 8px;
-            font-size: 14px;
-            margin-right: 6px;
-        }
-
-        .q-text {
-            font-size: 17px;
-            font-weight: 700;
-        }
-
-        .q-sub {
-            font-size: 14px;
-            color: var(--muted);
-            margin: 4px 0 0;
-        }
-
-        .opts {
-            margin-top: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .opts.row {
-            flex-direction: row;
-            flex-wrap: wrap;
-        }
-
-        .opt {
-            display: flex;
-            align-items: center;
-            min-height: 54px;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 8px 14px;
-            font-size: 18px;
-            cursor: pointer;
-            background: #fafafa;
-            gap: 10px;
-        }
-
-        /* 左の選択マーク：未選択は薄い○、選択すると白い✓（数字の行以外） */
-        .opts:not(.row) .opt::before,
-        .toggle .opt::before {
-            content: "○";
-            font-size: 24px;
-            line-height: 1;
-            color: #b5b5b5;
-            width: 28px;
-            text-align: center;
-            flex: 0 0 auto;
-            font-weight: 700;
-        }
-
-        .opts:not(.row) .opt.selected::before,
-        .toggle .opt.selected::before {
-            content: "✓";
-            color: #fff;
-            font-weight: 900;
-        }
-
-        .opts.row .opt {
-            flex: 0 0 auto;
-            min-width: 58px;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .opt input {
-            width: 22px;
-            height: 22px;
-            accent-color: var(--line-green);
-        }
-
-        /* 選択中：濃い緑＋白文字＋太い枠で、はっきり分かるように */
-        .opt.selected {
-            border-color: var(--line-green-dark);
-            background: var(--line-green);
-            color: #fff;
-            font-weight: 800;
-            box-shadow: 0 0 0 4px var(--focus);
-        }
-
-        .indent {
-            margin-left: 6px;
-            padding-left: 12px;
-            border-left: 3px solid #E8F8EE;
-        }
-
-        .btn {
-            width: 100%;
-            min-height: 54px;
-            border: none;
-            border-radius: 12px;
-            background: var(--line-green);
-            color: #fff;
-            font-size: 19px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(6, 199, 85, 0.35);
-            margin-top: 8px;
-        }
-
-        .btn:active {
-            transform: scale(0.99);
-            opacity: 0.96;
-        }
-
-        .btn.secondary {
-            background: #fff;
-            color: var(--line-green-dark);
-            border: 2px solid var(--line-green);
-            box-shadow: none;
-        }
-
-        .btn.ghost {
-            background: #fff;
-            color: var(--muted);
-            border: 2px solid var(--border);
-            box-shadow: none;
-        }
-
-        .btn[disabled] {
-            background: #bdbdbd;
-            box-shadow: none;
-            cursor: default;
-        }
-
-        .back {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--line-green-dark);
-            font-weight: 700;
-            font-size: 15px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            margin-bottom: 12px;
-            padding: 4px;
-        }
-
-        .sec-h {
-            font-size: 15px;
-            font-weight: 700;
-            color: #fff;
-            background: #444;
-            padding: 6px 12px;
-            border-radius: 8px;
-            margin: 18px 0 10px;
-        }
-
-        .toggle {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .toggle .opt {
-            flex: 1;
-            justify-content: center;
-        }
-
-        .notice {
-            background: var(--warn-bg);
-            border: 1px solid var(--warn-bd);
-            color: var(--warn-tx);
-            border-radius: 12px;
-            padding: 14px 16px;
-            font-size: 15px;
-            margin-bottom: 14px;
-        }
-
-        .done-icon {
-            text-align: center;
-            font-size: 54px;
-        }
-
-        .preview {
-            background: #0f1720;
-            color: #d6f5e0;
-            border-radius: 12px;
-            padding: 14px;
-            font-size: 12.5px;
-            white-space: pre-wrap;
-            word-break: break-all;
-            margin-top: 14px;
-            font-family: ui-monospace, Menlo, Consolas, monospace;
-        }
-
-        .preview-title {
-            font-size: 13px;
-            color: var(--muted);
-            margin-top: 18px;
-            font-weight: 700;
-        }
-
-        .mock-note {
-            text-align: center;
-            font-size: 13px;
-            color: var(--muted);
-            margin-top: 16px;
-        }
-    </style>
+  /* ===== 申込後フロー（チェックイン→アンケート→完了）オーバーレイ ===== */
+  .overlay{position:fixed; inset:0; background:var(--bg); z-index:50; overflow-y:auto; display:none;}
+  .overlay.open{display:block;}
+  .overlay-inner{max-width:440px; margin:0 auto; padding:16px 12px 48px;}
+  .ov-head{background:var(--kizuna); color:#fff; border-radius:12px; padding:12px 14px; font-weight:700; margin-bottom:14px;}
+  .ov-head small{display:block; font-weight:500; font-size:13px; opacity:.92; margin-top:3px;}
+  .flow-step{display:none;}
+  .flow-step.active{display:block;}
+  .back{display:inline-flex; align-items:center; gap:6px; color:var(--kizuna-dark); font-weight:700; font-size:15px; background:none; border:none; cursor:pointer; margin-bottom:12px; padding:4px; width:auto;}
+  .q{background:#fff; border:1px solid #d0d5dc; border-radius:12px; padding:16px; margin-bottom:12px;}
+  .q-num{display:inline-block; background:var(--kizuna); color:#fff; font-weight:700; border-radius:6px; padding:1px 8px; font-size:14px; margin-right:6px;}
+  .q-text{font-size:17px; font-weight:700;}
+  .q-sub{font-size:14px; color:var(--muted); margin:4px 0 0;}
+  .opts{margin-top:12px; display:flex; flex-direction:column; gap:8px;}
+  .opts.row{flex-direction:row; flex-wrap:wrap;}
+  .opt{display:flex; align-items:center; min-height:54px; border:2px solid #d0d5dc; border-radius:12px; padding:8px 14px; font-size:18px; cursor:pointer; background:#fafafa; gap:10px;}
+  .opts:not(.row) .opt::before, .toggle .opt::before{content:"○"; font-size:24px; line-height:1; color:#b5b5b5; width:28px; text-align:center; flex:0 0 auto; font-weight:700;}
+  .opts:not(.row) .opt.selected::before, .toggle .opt.selected::before{content:"✓"; color:#fff; font-weight:900;}
+  .opts.row .opt{flex:0 0 auto; min-width:58px; justify-content:center; font-size:20px; font-weight:700;}
+  .opt.selected{border-color:var(--kizuna-dark); background:var(--kizuna); color:#fff; font-weight:800; box-shadow:0 0 0 4px var(--focus);}
+  .indent{margin-left:6px; padding-left:12px; border-left:3px solid #E8F8EE;}
+  .sec-h{font-size:15px; font-weight:700; color:#fff; background:#444; padding:6px 12px; border-radius:8px; margin:18px 0 10px;}
+  .toggle{display:flex; gap:10px; margin-top:10px;}
+  .toggle .opt{flex:1; justify-content:center;}
+  .notice{background:#FFF4E5; border:1px solid #E0A96D; color:#8a5a1a; border-radius:12px; padding:14px 16px; font-size:15px; margin-bottom:14px;}
+  .preview{background:#0f1720; color:#d6f5e0; border-radius:12px; padding:14px; font-size:12.5px; white-space:pre-wrap; word-break:break-all; margin-top:10px; font-family:ui-monospace,Menlo,Consolas,monospace;}
+  .preview-title{font-size:13px; color:var(--muted); margin-top:16px; font-weight:700;}
+  .done-icon{text-align:center; font-size:54px;}
+  .mock-note{text-align:center; font-size:13px; color:var(--muted); margin-top:14px;}
+</style>
 </head>
-
 <body>
-    <header class="app-header">
-        きずな（KIZUNA）
-        <small>イベント案内・参加・アンケート（LIFF画面モック・送信しません）</small>
+  <div class="app">
+    <header>
+      <h1>KIZUNA 盛岡市版</h1>
+      <span class="pill">統合モック</span>
     </header>
-    <div class="who" id="whoBar">ログイン中：はなこ さん（参加者ID: P001）</div>
 
-    <main>
-        <!-- 画面1: イベント一覧 -->
-        <section class="screen active" id="screen-list">
-            <noscript>
-                <div class="notice">
-                    このプレビューでは画面の操作（申込・アンケート）ができません。<br />
-                    iPhoneでは <b>「Safari」で開く</b> と、申し込みやアンケートまで動きます。
-                </div>
-            </noscript>
-            <p class="lead">お近くの集いの場・教室のご案内です。気になるものを選んで、参加のお申し込みができます。</p>
-            <!-- JavaScriptが動かない環境（iPhoneのファイルプレビュー等）でも見えるように、静的なカードを最初から表示。JSが動けば下記を同じ内容で再描画し、タップ操作を有効化します。 -->
-            <div id="eventList">
-                <div class="card tap" data-ev="S2026-0628-01">
-                    <div class="ev-title">南仙北 ふれあいサロン</div>
-                    <div class="ev-meta"><b>2026-06-28(日) 10:00</b><br>南仙北二丁目 集会所</div>
-                    <span class="pill tag">きこえチェックあり</span>
-                </div>
-                <div class="card tap" data-ev="S2026-0702-01">
-                    <div class="ev-title">いきいき体操とお茶っこ</div>
-                    <div class="ev-meta"><b>2026-07-02(木) 14:00</b><br>仙北 老人福祉センター</div>
-                    <span class="pill tag">運動</span>
-                </div>
-                <div class="card tap" data-ev="S2026-0710-01">
-                    <div class="ev-title">耳の健康教室＋補聴器相談</div>
-                    <div class="ev-meta"><b>2026-07-10(金) 13:30</b><br>地域包括支援センター</div>
-                    <span class="pill tag">耳鼻科・補聴器相談</span>
-                </div>
+    <noscript>
+      <div class="notice">このプレビューでは操作ができません。iPhoneでは「Safari」で開くと、絞り込み・申込・アンケートまで動きます。</div>
+    </noscript>
+
+    <!-- 絞り込み -->
+    <div class="card">
+      <label for="centerSelect">地域包括支援センター（任意）</label>
+      <select id="centerSelect">
+        <option value="">未選択</option>
+        <option value="イーハトーブ地域包括支援センター" selected>イーハトーブ地域包括支援センター</option>
+      </select>
+
+      <label for="districtSelect" style="margin-top:14px;">コミュニティ推進地区（必須）</label>
+      <select id="districtSelect"></select>
+
+      <div id="blockSelectContainer" style="margin-top:14px; display:none;">
+        <label for="blockDropdownBtn">町名（複数可）</label>
+        <div class="dropdown" id="blockDropdown">
+          <button type="button" class="dropdown-btn" id="blockDropdownBtn"><span id="blockSummary">全選択</span><span>▼</span></button>
+          <div class="dropdown-panel" id="blockOptions"></div>
+        </div>
+        <div class="footer-note">最上段「全選択」で当該地区の全町名を対象</div>
+      </div>
+
+      <button class="btn" id="applyBtn" style="margin-top:14px;">適用</button>
+    </div>
+
+    <!-- 表示切替 -->
+    <div class="tabs">
+      <div class="tab" data-tab="list">リスト</div>
+      <div class="tab active" data-tab="calendar">カレンダー</div>
+    </div>
+
+    <!-- リスト -->
+    <div id="eventList" style="display:none;"></div>
+
+    <!-- カレンダー -->
+    <div id="calendarView">
+      <div class="cal-head">
+        <button class="btn secondary" id="prevMonth">前月</button>
+        <div id="monthLabel"></div>
+        <button class="btn secondary" id="nextMonth">翌月</button>
+      </div>
+      <div class="calendar-legend" id="calendarLegend"></div>
+      <div class="calendar" id="calendarGrid"></div>
+      <div class="day-events-list" id="dayEventsList"></div>
+    </div>
+
+    <div class="footer-note">画面幅360〜440px想定。リスト表示は全イベントを一覧表示します。</div>
+  </div>
+
+  <!-- 申込後フロー -->
+  <div class="overlay" id="overlay">
+    <div class="overlay-inner">
+      <div class="ov-head">
+        KIZUNA 参加の受付・アンケート
+        <small id="ovWho">ログイン中：はなこ さん（参加者ID: P001）</small>
+      </div>
+
+      <!-- チェックイン -->
+      <section class="flow-step active" id="step-checkin">
+        <button class="back" id="flowClose1">‹ イベント一覧にもどる</button>
+        <div class="card">
+          <div class="event-title" id="ovEvTitle"></div>
+          <div class="meta" id="ovEvMeta"></div>
+        </div>
+        <div class="notice">会場に着いたら「チェックイン」を押してください。出席が自動で記録されます。</div>
+        <button class="btn-kizuna" id="btnCheckin">会場に到着（チェックイン）</button>
+        <p class="mock-note">実際の送信は行いません（画面の動きの確認用）。</p>
+      </section>
+
+      <!-- アンケート -->
+      <section class="flow-step" id="step-survey">
+        <button class="back" id="backToCheckin">‹ もどる</button>
+        <p class="q-sub" style="margin-bottom:10px;">参加ありがとうございました。最後にかんたんなアンケートにお答えください（2〜4分）。お名前は使わず番号で管理します。</p>
+
+        <div class="q">
+          <div class="q-text">回答方法</div>
+          <div class="toggle" data-q="method">
+            <div class="opt" data-val="本人">ご本人</div>
+            <div class="opt" data-val="代理">お手伝い（代理）</div>
+          </div>
+          <div class="indent" id="roleWrap" style="display:none; margin-top:10px;">
+            <div class="q-sub">お手伝いの方</div>
+            <div class="opts row" data-q="role">
+              <div class="opt" data-val="民生委員">民生委員</div>
+              <div class="opt" data-val="ボランティア">ボランティア</div>
+              <div class="opt" data-val="スタッフ">スタッフ</div>
             </div>
-        </section>
+          </div>
+        </div>
 
-        <!-- 画面2: イベント詳細 -->
-        <section class="screen" id="screen-detail">
-            <button class="back" id="backToList">‹ 一覧にもどる</button>
-            <div class="card">
-                <div class="ev-title" id="d-title"></div>
-                <div class="ev-meta" id="d-meta"></div>
-                <div id="d-tag"></div>
-                <p class="q-sub" id="d-desc" style="margin-top:12px;"></p>
+        <div class="sec-h">１．きこえについて</div>
+        <div class="q">
+          <div><span class="q-num">Q1</span><span class="q-text">会話で聞き返すことがありますか。</span></div>
+          <div class="opts" data-q="q1">
+            <div class="opt" data-val="2">よくある</div>
+            <div class="opt" data-val="1">ときどき</div>
+            <div class="opt" data-val="0">ほとんどない</div>
+          </div>
+        </div>
+        <div class="q">
+          <div><span class="q-num">Q2</span><span class="q-text">補聴器を持っていますか。</span></div>
+          <div class="opts" data-q="q2">
+            <div class="opt" data-val="はい">はい</div>
+            <div class="opt" data-val="いいえ">いいえ</div>
+          </div>
+          <div class="indent" id="q2sub" style="display:none; margin-top:12px;">
+            <div class="q-text" style="font-size:15px;">Q2-1　今日は補聴器をつけて来ましたか。</div>
+            <div class="opts" data-q="q2a">
+              <div class="opt" data-val="Y">はい</div>
+              <div class="opt" data-val="N">いいえ</div>
             </div>
-            <button class="btn" id="btnApply">参加を申し込む</button>
-            <button class="btn secondary" id="btnCheckin" style="display:none;">会場に到着（チェックイン）</button>
-            <button class="btn secondary" id="btnGoSurvey" style="display:none;">参加後アンケートに答える</button>
-            <p class="mock-note">実際の申込・送信は行いません（画面の動きの確認用）。</p>
-        </section>
-
-        <!-- 画面3: アンケート -->
-        <section class="screen" id="screen-survey">
-            <button class="back" id="backToDetail">‹ もどる</button>
-            <p class="lead">参加ありがとうございました。最後に、かんたんなアンケートにお答えください（2〜4分）。お名前は使わず番号で管理します。</p>
-
-            <div class="q">
-                <div class="q-text">回答方法</div>
-                <div class="toggle" data-q="method">
-                    <div class="opt" data-val="本人">ご本人</div>
-                    <div class="opt" data-val="代理">お手伝い（代理）</div>
-                </div>
-                <div class="indent" id="roleWrap" style="display:none; margin-top:10px;">
-                    <div class="q-sub">お手伝いの方</div>
-                    <div class="opts row" data-q="role">
-                        <div class="opt" data-val="民生委員">民生委員</div>
-                        <div class="opt" data-val="ボランティア">ボランティア</div>
-                        <div class="opt" data-val="スタッフ">スタッフ</div>
-                    </div>
-                </div>
+            <div class="q-text" style="font-size:15px; margin-top:12px;">Q2-2　この1週間で使った日数</div>
+            <div class="opts row" data-q="q2b">
+              <div class="opt" data-val="0">0</div><div class="opt" data-val="1">1</div><div class="opt" data-val="2">2</div><div class="opt" data-val="3">3</div><div class="opt" data-val="4">4</div><div class="opt" data-val="5">5</div><div class="opt" data-val="6">6</div><div class="opt" data-val="7">7</div>
             </div>
+          </div>
+        </div>
+        <div class="q">
+          <div><span class="q-num">Q3</span><span class="q-text">耳鼻科を受診しましたか。</span></div>
+          <div class="opts" data-q="q3">
+            <div class="opt" data-val="Y">受診した</div>
+            <div class="opt" data-val="plan">予約した</div>
+            <div class="opt" data-val="N">まだ</div>
+          </div>
+        </div>
 
-            <div class="sec-h">１．きこえについて</div>
-            <div class="q">
-                <div><span class="q-num">Q1</span><span class="q-text">会話で聞き返すことがありますか。</span></div>
-                <div class="opts" data-q="q1">
-                    <div class="opt" data-val="2">よくある</div>
-                    <div class="opt" data-val="1">ときどき</div>
-                    <div class="opt" data-val="0">ほとんどない</div>
-                </div>
-            </div>
-            <div class="q">
-                <div><span class="q-num">Q2</span><span class="q-text">補聴器を持っていますか。</span></div>
-                <div class="opts" data-q="q2">
-                    <div class="opt" data-val="はい">はい</div>
-                    <div class="opt" data-val="いいえ">いいえ</div>
-                </div>
-                <div class="indent" id="q2sub" style="display:none; margin-top:12px;">
-                    <div class="q-text" style="font-size:15px;">Q2-1　今日は補聴器をつけて来ましたか。</div>
-                    <div class="opts" data-q="q2a">
-                        <div class="opt" data-val="Y">はい</div>
-                        <div class="opt" data-val="N">いいえ</div>
-                    </div>
-                    <div class="q-text" style="font-size:15px; margin-top:12px;">Q2-2　この1週間で使った日数</div>
-                    <div class="opts row" data-q="q2b">
-                        <div class="opt" data-val="0">0</div>
-                        <div class="opt" data-val="1">1</div>
-                        <div class="opt" data-val="2">2</div>
-                        <div class="opt" data-val="3">3</div>
-                        <div class="opt" data-val="4">4</div>
-                        <div class="opt" data-val="5">5</div>
-                        <div class="opt" data-val="6">6</div>
-                        <div class="opt" data-val="7">7</div>
-                    </div>
-                </div>
-            </div>
-            <div class="q">
-                <div><span class="q-num">Q3</span><span class="q-text">耳鼻科を受診しましたか。</span></div>
-                <div class="opts" data-q="q3">
-                    <div class="opt" data-val="Y">受診した</div>
-                    <div class="opt" data-val="plan">予約した</div>
-                    <div class="opt" data-val="N">まだ</div>
-                </div>
-            </div>
+        <div class="sec-h">２．毎日のすごし方</div>
+        <div class="q">
+          <div><span class="q-num">Q4</span><span class="q-text">この1週間で外出した日数</span></div>
+          <div class="opts row" data-q="q4">
+            <div class="opt" data-val="0">0</div><div class="opt" data-val="1">1</div><div class="opt" data-val="2">2</div><div class="opt" data-val="3">3</div><div class="opt" data-val="4">4</div><div class="opt" data-val="5">5</div><div class="opt" data-val="6">6</div><div class="opt" data-val="7">7</div>
+          </div>
+        </div>
+        <div class="q">
+          <div><span class="q-num">Q5</span><span class="q-text">この1週間で人と話した日数</span></div>
+          <div class="opts row" data-q="q5">
+            <div class="opt" data-val="0">0</div><div class="opt" data-val="1">1</div><div class="opt" data-val="2">2</div><div class="opt" data-val="3">3</div><div class="opt" data-val="4">4</div><div class="opt" data-val="5">5</div><div class="opt" data-val="6">6</div><div class="opt" data-val="7">7</div>
+          </div>
+        </div>
 
-            <div class="sec-h">２．毎日のすごし方</div>
-            <div class="q">
-                <div><span class="q-num">Q4</span><span class="q-text">この1週間で外出した日数</span></div>
-                <div class="opts row" data-q="q4">
-                    <div class="opt" data-val="0">0</div>
-                    <div class="opt" data-val="1">1</div>
-                    <div class="opt" data-val="2">2</div>
-                    <div class="opt" data-val="3">3</div>
-                    <div class="opt" data-val="4">4</div>
-                    <div class="opt" data-val="5">5</div>
-                    <div class="opt" data-val="6">6</div>
-                    <div class="opt" data-val="7">7</div>
-                </div>
-            </div>
-            <div class="q">
-                <div><span class="q-num">Q5</span><span class="q-text">この1週間で人と話した日数</span></div>
-                <div class="opts row" data-q="q5">
-                    <div class="opt" data-val="0">0</div>
-                    <div class="opt" data-val="1">1</div>
-                    <div class="opt" data-val="2">2</div>
-                    <div class="opt" data-val="3">3</div>
-                    <div class="opt" data-val="4">4</div>
-                    <div class="opt" data-val="5">5</div>
-                    <div class="opt" data-val="6">6</div>
-                    <div class="opt" data-val="7">7</div>
-                </div>
-            </div>
+        <div class="sec-h">３．お気持ちについて（この2週間）</div>
+        <div class="q">
+          <div><span class="q-num">Q6</span><span class="q-text">物事に興味や楽しみを感じないことがありましたか。</span></div>
+          <div class="opts" data-q="q6">
+            <div class="opt" data-val="0">ない</div><div class="opt" data-val="1">数日</div><div class="opt" data-val="2">半分以上</div><div class="opt" data-val="3">ほぼ毎日</div>
+          </div>
+        </div>
+        <div class="q">
+          <div><span class="q-num">Q7</span><span class="q-text">気分が落ち込む・憂うつだと感じましたか。</span></div>
+          <div class="opts" data-q="q7">
+            <div class="opt" data-val="0">ない</div><div class="opt" data-val="1">数日</div><div class="opt" data-val="2">半分以上</div><div class="opt" data-val="3">ほぼ毎日</div>
+          </div>
+        </div>
+        <div class="q">
+          <div><span class="q-num">Q8</span><span class="q-text">困ったときに頼れる人がいますか。</span></div>
+          <div class="opts" data-q="q8">
+            <div class="opt" data-val="0">いる</div><div class="opt" data-val="1">いない</div>
+          </div>
+        </div>
 
-            <div class="sec-h">３．お気持ちについて（この2週間）</div>
-            <div class="q">
-                <div><span class="q-num">Q6</span><span class="q-text">物事に興味や楽しみを感じないことがありましたか。</span></div>
-                <div class="opts" data-q="q6">
-                    <div class="opt" data-val="0">ない</div>
-                    <div class="opt" data-val="1">数日</div>
-                    <div class="opt" data-val="2">半分以上</div>
-                    <div class="opt" data-val="3">ほぼ毎日</div>
-                </div>
-            </div>
-            <div class="q">
-                <div><span class="q-num">Q7</span><span class="q-text">気分が落ち込む・憂うつだと感じましたか。</span></div>
-                <div class="opts" data-q="q7">
-                    <div class="opt" data-val="0">ない</div>
-                    <div class="opt" data-val="1">数日</div>
-                    <div class="opt" data-val="2">半分以上</div>
-                    <div class="opt" data-val="3">ほぼ毎日</div>
-                </div>
-            </div>
-            <div class="q">
-                <div><span class="q-num">Q8</span><span class="q-text">困ったときに頼れる人がいますか。</span></div>
-                <div class="opts" data-q="q8">
-                    <div class="opt" data-val="0">いる</div>
-                    <div class="opt" data-val="1">いない</div>
-                </div>
-            </div>
+        <button class="btn-kizuna" id="btnSubmit">回答を送信する</button>
+        <p class="mock-note">実際の送信は行いません。送信されるデータは次の画面で確認できます。</p>
+      </section>
 
-            <button class="btn" id="btnSubmit">回答を送信する</button>
-            <p class="mock-note">実際の送信は行いません。送信されるデータの内容を次の画面で確認できます。</p>
-        </section>
+      <!-- 完了 -->
+      <section class="flow-step" id="step-done">
+        <div class="done-icon">✅</div>
+        <div class="card" style="text-align:center;">
+          <div class="event-title">ありがとうございました</div>
+          <div class="meta">アンケートのご回答を受け付けました。</div>
+        </div>
+        <div class="notice" id="referNotice" style="display:none;">最近、気分が晴れない日が続いているかもしれません。よろしければ、会場のスタッフ・民生委員や、かかりつけ・地域包括支援センターにご相談ください。</div>
+        <div class="preview-title">▼ データベース（kpi_spreadsheet）へ送信される内容（モック）</div>
+        <div class="preview" id="preview"></div>
+        <button class="btn-kizuna" id="flowClose2" style="margin-top:16px;">イベント一覧にもどる</button>
+        <p class="mock-note">実運用では GAS Web API 経由で 03／07b／07c／07d／07e の各シートに追記します。</p>
+      </section>
+    </div>
+  </div>
 
-        <!-- 画面4: 完了 -->
-        <section class="screen" id="screen-done">
-            <div class="done-icon">✅</div>
-            <div class="card" style="text-align:center;">
-                <div class="ev-title">ありがとうございました</div>
-                <div class="ev-meta">アンケートのご回答を受け付けました。</div>
-            </div>
-            <div class="notice" id="referNotice" style="display:none;">
-                最近、気分が晴れない日が続いているかもしれません。よろしければ、会場のスタッフ・民生委員や、かかりつけ・地域包括支援センターにご相談ください。
-            </div>
-            <div class="preview-title">▼ データベース（kpi_spreadsheet）へ送信される内容（モック）</div>
-            <div class="preview" id="preview"></div>
-            <button class="btn" id="btnRestart" style="margin-top:16px;">最初の画面にもどる</button>
-            <p class="mock-note">実運用では、この内容を GAS Web API 経由で 03／07b／07c／07d／07e の各シートに追記します。</p>
-        </section>
-    </main>
+<script>
+(function(){
+  // ===== 要素参照 =====
+  const centerSelect = document.getElementById("centerSelect");
+  const districtSelect = document.getElementById("districtSelect");
+  const blockSelectContainer = document.getElementById("blockSelectContainer");
+  const blockDropdown = document.getElementById("blockDropdown");
+  const blockDropdownBtn = document.getElementById("blockDropdownBtn");
+  const blockOptions = document.getElementById("blockOptions");
+  const blockSummary = document.getElementById("blockSummary");
+  const applyBtn = document.getElementById("applyBtn");
+  const tabs = document.querySelectorAll(".tab");
+  const eventList = document.getElementById("eventList");
+  const calendarView = document.getElementById("calendarView");
+  const monthLabel = document.getElementById("monthLabel");
+  const calendarGrid = document.getElementById("calendarGrid");
+  const calendarLegend = document.getElementById("calendarLegend");
+  const prevMonth = document.getElementById("prevMonth");
+  const nextMonth = document.getElementById("nextMonth");
+  const dayEventsList = document.getElementById("dayEventsList");
+  let selectedDate = null;
 
-    <script>
-        /* =========================================================
-           LIFFモック（フロントのみ・送信しません）
-           本番LIFF化の際は、下記を有効にして participant_id を LINE プロフィールから取得：
-           // await liff.init({ liffId: "xxxx-xxxx" });
-           // const profile = await liff.getProfile(); state.participantId = mapLineToPid(profile.userId);
-           ========================================================= */
-        (function () {
-            var state = {
-                participantId: "P001",
-                displayName: "はなこ",
-                selectedEventId: null,
-                applied: {},     // eventId -> true
-                checkedIn: {},   // eventId -> true
-                surveyed: {},    // eventId -> true
-                answers: {}
-            };
+  const ALL_DISTRICTS = ["西厨川","桜城","仁王","上田","米内","山岸","松園","緑ヶ丘","城南","中野","簗川","加賀野","杜陵","大慈寺","青山","東厨川","土淵","北厨川","みたけ","仙北","本宮","太田","つなぎ","見前","乙部","飯岡","巻堀姫神","好摩","渋民","玉山薮川"];
 
-            var EVENTS = [
-                { id: "S2026-0628-01", title: "南仙北 ふれあいサロン", date: "2026-06-28(日) 10:00", place: "南仙北二丁目 集会所", tag: "きこえチェックあり", desc: "お茶っこと軽い体操、ご近所のおしゃべり。今回は「きこえの簡易チェック」も行います。" },
-                { id: "S2026-0702-01", title: "いきいき体操とお茶っこ", date: "2026-07-02(木) 14:00", place: "仙北 老人福祉センター", tag: "運動", desc: "椅子に座ったままできる体操が中心です。はじめての方も歓迎します。" },
-                { id: "S2026-0710-01", title: "耳の健康教室＋補聴器相談", date: "2026-07-10(金) 13:30", place: "地域包括支援センター", tag: "耳鼻科・補聴器相談", desc: "耳の健康のお話と、補聴器相談医・認定補聴器技能者による個別相談コーナーがあります。" }
-            ];
+  const BLOCKS = {
+    仙北: ["全選択","1 仙北一丁目","2 仙北二丁目","3 仙北三丁目","4 東仙北一丁目","5 東仙北二丁目","6 南仙北一丁目","7 南仙北二丁目","8 南仙北三丁目","9 西仙北一丁目","10 西仙北二丁目"],
+    本宮: ["全選択","1 本宮一～七丁目","2 向中野一～七丁目","3 本宮字石仏","4 本宮字上越場","5 本宮字水門","6 本宮字大柳","7 本宮字小林","8 本宮字林崎","9 本宮字大宮","10 本宮字久保筋"],
+    太田: ["全選択","1 猪去字","2 上鹿妻字","3 中太田字","4 下太田字","5 上太田字"],
+    つなぎ: ["全選択","1 繋字堂ケ沢","2 繋字尾入野","3 繋字山根","4 繋字北ノ浦","5 繋字北久保","6 繋字下猿田","7 繋字除キ","8 繋字萪内沢","9 繋字舘市","10 繋字塗沢","11 繋字湯ノ舘","12 繋字清水端","13 繋字猿田"],
+  };
 
-            // ---- 画面遷移 ----
-            function show(id) {
-                document.querySelectorAll(".screen").forEach(function (s) { s.classList.remove("active"); });
-                document.getElementById(id).classList.add("active");
-                window.scrollTo(0, 0);
-            }
+  let selectedBlocks = ["全選択"];
+  let currentMonth = new Date(2026, 5, 1); // 2026-06（初期表示月。翌月で7月の4件へ）
 
-            // ---- イベント一覧描画 ----
-            function renderList() {
-                var html = "";
-                EVENTS.forEach(function (ev) {
-                    var status = "";
-                    if (state.surveyed[ev.id]) status = '<span class="pill done">回答ずみ</span>';
-                    else if (state.checkedIn[ev.id]) status = '<span class="pill checked">チェックイン済み</span>';
-                    else if (state.applied[ev.id]) status = '<span class="pill applied">申込ずみ</span>';
-                    html +=
-                        '<div class="card tap" data-ev="' + ev.id + '">' +
-                        '<div class="ev-title">' + ev.title + '</div>' +
-                        '<div class="ev-meta"><b>' + ev.date + '</b><br>' + ev.place + '</div>' +
-                        '<span class="pill tag">' + ev.tag + '</span> ' + status +
-                        '</div>';
-                });
-                document.getElementById("eventList").innerHTML = html;
-                document.querySelectorAll("[data-ev]").forEach(function (c) {
-                    c.addEventListener("click", function () { openDetail(c.getAttribute("data-ev")); });
-                });
-            }
+  const CENTER_DISTRICTS = { "イーハトーブ地域包括支援センター": ["仙北","本宮","太田","つなぎ"] };
 
-            // ---- イベント詳細 ----
-            function openDetail(evId) {
-                state.selectedEventId = evId;
-                var ev = EVENTS.filter(function (e) { return e.id === evId; })[0];
-                document.getElementById("d-title").textContent = ev.title;
-                document.getElementById("d-meta").innerHTML = "<b>" + ev.date + "</b><br>" + ev.place;
-                document.getElementById("d-tag").innerHTML = '<span class="pill tag">' + ev.tag + '</span>';
-                document.getElementById("d-desc").textContent = ev.desc;
+  // ===== 全イベント（calendar 6件 ＋ sign-up 3件 ＝ 9件） =====
+  const EVENTS = [
+    { id:"S2026-0609-01", title:"仙北いきいき体操", center:"イーハトーブ地域包括支援センター", district:"仙北", blocks:["全選択"], place:"仙北地区活動センター（仮）", date:"2026/6/9(火) 10:00-11:30", start:"2026-06-09", detail:"椅子体操と交流", tag:"運動" },
+    { id:"S2026-0613-01", title:"本宮カフェ", center:"イーハトーブ地域包括支援センター", district:"本宮", blocks:["全選択"], place:"本宮地区活動センター（仮）", date:"2026/6/13(土) 14:00-15:30", start:"2026-06-13", detail:"お茶とミニ講話", tag:"交流" },
+    { id:"S2026-0618-01", title:"太田・健康講話", center:"イーハトーブ地域包括支援センター", district:"太田", blocks:["全選択"], place:"太田地区活動センター（仮）", date:"2026/6/18(木) 13:30-15:00", start:"2026-06-18", detail:"血圧・栄養のミニ講話", tag:"健康講話" },
+    { id:"S2026-0620-01", title:"つなぎ・お茶会", center:"イーハトーブ地域包括支援センター", district:"つなぎ", blocks:["全選択"], place:"つなぎ公民館（仮）", date:"2026/6/20(土) 13:00-14:30", start:"2026-06-20", detail:"茶話会と軽い体操", tag:"交流" },
+    { id:"S2026-0628-01", title:"南仙北 ふれあいサロン", center:"イーハトーブ地域包括支援センター", district:"仙北", blocks:["7 南仙北二丁目"], place:"南仙北二丁目 集会所", date:"2026/6/28(日) 10:00", start:"2026-06-28", detail:"お茶っこと軽い体操。きこえの簡易チェックも実施。", tag:"きこえチェックあり" },
+    { id:"S2026-0702-01", title:"いきいき体操とお茶っこ", center:"イーハトーブ地域包括支援センター", district:"仙北", blocks:["全選択"], place:"仙北 老人福祉センター", date:"2026/7/2(木) 14:00", start:"2026-07-02", detail:"椅子に座ったままできる体操が中心。", tag:"運動" },
+    { id:"S2026-0704-01", title:"仙北ミニ交流", center:"イーハトーブ地域包括支援センター", district:"仙北", blocks:["1 仙北一丁目","2 仙北二丁目"], place:"仙北地区活動センター（仮）", date:"2026/7/4(土) 10:00-11:00", start:"2026-07-04", detail:"少人数の交流会", tag:"交流" },
+    { id:"S2026-0710-01", title:"耳の健康教室＋補聴器相談", center:"イーハトーブ地域包括支援センター", district:"全域", blocks:["全選択"], place:"地域包括支援センター", date:"2026/7/10(金) 13:30", start:"2026-07-10", detail:"耳の健康のお話＋補聴器相談医・認定補聴器技能者の個別相談。", tag:"耳鼻科・補聴器相談" },
+    { id:"S2026-0718-01", title:"イーハトーブ 全体交流会", center:"イーハトーブ地域包括支援センター", district:"全域", blocks:["全選択"], place:"仙北地区活動センター", date:"2026/7/18(土) 14:00-16:00", start:"2026-07-18", detail:"仙北・本宮・太田・つなぎ4地区合同の交流会", tag:"交流" },
+  ];
 
-                var applied = !!state.applied[evId];
-                var checked = !!state.checkedIn[evId];
-                var surveyed = !!state.surveyed[evId];
-                document.getElementById("btnApply").style.display = applied ? "none" : "block";
-                document.getElementById("btnCheckin").style.display = (applied && !checked) ? "block" : "none";
-                document.getElementById("btnGoSurvey").style.display = (checked && !surveyed) ? "block" : "none";
-                show("screen-detail");
-            }
+  let registrations = new Set();  // 申込済み
+  let checkedIn = new Set();      // チェックイン済み
+  let surveyed = new Set();       // アンケート回答済み
 
-            document.getElementById("backToList").addEventListener("click", function () { renderList(); show("screen-list"); });
-            document.getElementById("btnApply").addEventListener("click", function () {
-                state.applied[state.selectedEventId] = true;
-                alert("参加を申し込みました（モック）。当日は会場でチェックインしてください。");
-                openDetail(state.selectedEventId);
-            });
-            document.getElementById("btnCheckin").addEventListener("click", function () {
-                state.checkedIn[state.selectedEventId] = true;
-                alert("チェックインしました（モック）。出席が自動で記録されます。");
-                openDetail(state.selectedEventId);
-            });
-            document.getElementById("btnGoSurvey").addEventListener("click", function () {
-                resetSurvey(); show("screen-survey");
-            });
-            document.getElementById("backToDetail").addEventListener("click", function () { openDetail(state.selectedEventId); });
+  // ===== 絞り込みUI =====
+  const updateDistrictOptions = () => {
+    const center = centerSelect.value;
+    districtSelect.innerHTML = "";
+    if(!center){
+      ALL_DISTRICTS.forEach((d)=>{ const o=document.createElement("option"); o.value=d; o.textContent=d; districtSelect.appendChild(o); });
+      blockSelectContainer.style.display="none";
+    } else {
+      const districts = CENTER_DISTRICTS[center] || [];
+      const allOpt=document.createElement("option"); allOpt.value="全選択"; allOpt.textContent="全選択（この地区すべて）"; districtSelect.appendChild(allOpt);
+      districts.forEach((d)=>{ const o=document.createElement("option"); o.value=d; o.textContent=d; districtSelect.appendChild(o); });
+      districtSelect.selectedIndex=0;
+      if(districtSelect.value==="全選択"){ blockSelectContainer.style.display="none"; }
+      else { blockSelectContainer.style.display="block"; selectedBlocks=["全選択"]; renderBlockOptions(); }
+    }
+  };
 
-            // ---- アンケートの選択UI ----
-            function resetSurvey() {
-                state.answers = {};
-                document.querySelectorAll("#screen-survey .opt.selected").forEach(function (o) { o.classList.remove("selected"); });
-                document.getElementById("q2sub").style.display = "none";
-                document.getElementById("roleWrap").style.display = "none";
-            }
+  const renderBlockOptions = () => {
+    if(blockSelectContainer.style.display==="none") return;
+    const district = districtSelect.value;
+    if(!BLOCKS[district]) return;
+    blockOptions.innerHTML="";
+    BLOCKS[district].forEach((b)=>{
+      const item=document.createElement("label"); item.className="dropdown-item";
+      const input=document.createElement("input"); input.type="checkbox"; input.value=b; input.checked=selectedBlocks.includes(b);
+      input.addEventListener("change",()=>toggleBlock(b));
+      item.appendChild(input); item.appendChild(document.createTextNode(b));
+      blockOptions.appendChild(item);
+    });
+    updateBlockSummary();
+  };
 
-            document.querySelectorAll("#screen-survey .opts, #screen-survey .toggle").forEach(function (group) {
-                var key = group.getAttribute("data-q");
-                group.querySelectorAll(".opt").forEach(function (opt) {
-                    opt.addEventListener("click", function () {
-                        group.querySelectorAll(".opt").forEach(function (o) { o.classList.remove("selected"); });
-                        opt.classList.add("selected");
-                        state.answers[key] = opt.getAttribute("data-val");
-                        if (key === "q2") document.getElementById("q2sub").style.display = (opt.getAttribute("data-val") === "はい") ? "block" : "none";
-                        if (key === "method") document.getElementById("roleWrap").style.display = (opt.getAttribute("data-val") === "代理") ? "block" : "none";
-                    });
-                });
-            });
+  const toggleBlock = (value) => {
+    if(value==="全選択"){ selectedBlocks=["全選択"]; }
+    else {
+      selectedBlocks=selectedBlocks.filter((v)=>v!=="全選択");
+      if(selectedBlocks.includes(value)) selectedBlocks=selectedBlocks.filter((v)=>v!==value);
+      else selectedBlocks.push(value);
+      if(!selectedBlocks.length) selectedBlocks=["全選択"];
+    }
+    renderBlockOptions();
+  };
 
-            // ---- 送信（プレビュー生成）----
-            document.getElementById("btnSubmit").addEventListener("click", function () {
-                var a = state.answers;
-                var required = ["method", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8"];
-                var missing = required.filter(function (k) { return a[k] === undefined; });
-                if (a.q2 === "はい" && a.q2a === undefined) missing.push("q2a");
-                if (missing.length) { alert("未回答の項目があります。最後までお答えください。"); return; }
+  const updateBlockSummary = () => {
+    if(selectedBlocks.includes("全選択")) blockSummary.textContent="全選択";
+    else if(selectedBlocks.length===1) blockSummary.textContent=selectedBlocks[0];
+    else blockSummary.textContent=selectedBlocks[0]+" 他"+(selectedBlocks.length-1);
+  };
 
-                var today = new Date().toISOString().slice(0, 10);
-                var pid = state.participantId;
-                var sid = state.selectedEventId;
-                var proxy = (a.method === "代理") ? "Y" : "N";
-                var phq2 = parseInt(a.q6, 10) + parseInt(a.q7, 10);
-                var refer = (phq2 >= 3) ? "Y" : "N";
-                var wears = (a.q2 === "はい") ? (a.q2a || "") : "NA";
-                var days = (a.q2 === "はい") ? (a.q2b !== undefined ? a.q2b : "NA") : "NA";
+  const matchEvent = (ev, center, district, blocks) => {
+    if(center && ev.center!==center) return false;
+    if(ev.district==="全域"){
+      if(district==="全選択") return true;
+      const cd=CENTER_DISTRICTS[center]||[]; return cd.includes(district);
+    }
+    if(district==="全選択"){
+      const cd=CENTER_DISTRICTS[center]||[]; if(!cd.includes(ev.district)) return false;
+    } else if(district && ev.district!==district){ return false; }
+    if(!center || !blockSelectContainer.style.display || blockSelectContainer.style.display==="none") return true;
+    if(blocks.includes("全選択")) return true;
+    return ev.blocks.some((b)=>blocks.includes(b)||b==="全選択");
+  };
 
-                var payload = {
-                    "03_参加記録": { session_id: sid, participant_id: pid, mode: "salon_only", is_first_time_ever: "N", briefing_received: "Y" },
-                    "07b_聞こえ記録": { participant_id: pid, session_id: sid, record_date: today, check_type: "routine", wears_today: wears, days_worn_last7: days, remarks_code: "hearing_self_" + a.q1 },
-                    "07c_受診記録": { participant_id: pid, referral_date: today, ent_visited: a.q3, remarks_code: "アンケート自己申告" },
-                    "07d_生活アンケート": { participant_id: pid, session_id: sid, survey_date: today, outings_last7: a.q4, talk_days_last7: a.q5, isolation_score: a.q8 },
-                    "07e_心理スクリーニング": { participant_id: pid, session_id: sid, screen_date: today, phq2_score: phq2, gds5_score: "NA", proxy_written: proxy, referred_to_consult: refer }
-                };
+  const badgeInfo = (ev) => ev.district==="全域"
+    ? { cls:"all", label:"全域", icon:"🌏" }
+    : { cls:"district", label:ev.district, icon:"📍" };
 
-                document.getElementById("preview").textContent = JSON.stringify(payload, null, 2);
-                document.getElementById("referNotice").style.display = (refer === "Y") ? "block" : "none";
-                state.checkedIn[sid] = true;
-                state.surveyed[sid] = true;
-                show("screen-done");
-            });
+  const stateChip = (ev) => {
+    if(surveyed.has(ev.id)) return '<span class="chip state">アンケート回答済み</span>';
+    if(checkedIn.has(ev.id)) return '<span class="chip state">チェックイン済み</span>';
+    if(registrations.has(ev.id)) return '<span class="chip state">申込済み</span>';
+    return '';
+  };
 
-            document.getElementById("btnRestart").addEventListener("click", function () { renderList(); show("screen-list"); });
+  // ===== リスト描画 =====
+  const renderEvents = () => {
+    const center=centerSelect.value, district=districtSelect.value;
+    eventList.innerHTML="";
+    const filtered=EVENTS.filter((ev)=>matchEvent(ev,center,district,selectedBlocks));
+    if(!filtered.length){ const e=document.createElement("div"); e.className="card empty"; e.textContent="該当するイベントがありません"; eventList.appendChild(e); return; }
+    filtered.forEach((ev,idx)=>{
+      const info=badgeInfo(ev); const reg=registrations.has(ev.id);
+      const card=document.createElement("div"); card.className="card event";
+      card.innerHTML =
+        '<span class="badge '+info.cls+'">'+info.icon+' '+info.label+'</span>'+
+        '<h3 class="event-title">'+ev.title+'</h3>'+
+        '<div class="meta">'+ev.date+'</div>'+
+        '<div class="place">場所: '+ev.place+'</div>'+
+        '<div class="chips"><span class="chip">#'+(idx+1)+'</span>'+(ev.tag?'<span class="chip">'+ev.tag+'</span>':'')+stateChip(ev)+'</div>'+
+        '<div class="actions"><button class="btn-register'+(reg?' registered':'')+'">'+(reg?'✓ 参加申し込み済み':'参加申し込み')+'</button></div>'+
+        (reg?'<button class="btn-kizuna btn-flow">この後のチェックイン・アンケートへ ›</button>':'');
+      eventList.appendChild(card);
+      card.querySelector(".btn-register").addEventListener("click",()=>{ toggleRegistration(ev.id); renderEvents(); renderCalendar(); });
+      const fb=card.querySelector(".btn-flow"); if(fb) fb.addEventListener("click",()=>openFlow(ev));
+    });
+  };
 
-            // 初期化
-            document.getElementById("whoBar").textContent = "ログイン中：" + state.displayName + " さん（参加者ID: " + state.participantId + "）";
-            renderList();
-        })();
-    </script>
+  // ===== カレンダー描画 =====
+  const buildMonthDays = (baseDate) => {
+    const y=baseDate.getFullYear(), m=baseDate.getMonth();
+    const first=new Date(y,m,1), startDay=first.getDay();
+    const dim=new Date(y,m+1,0).getDate(), prevDim=new Date(y,m,0).getDate();
+    const cells=[];
+    for(let i=startDay-1;i>=0;i--) cells.push({date:new Date(y,m-1,prevDim-i),out:true});
+    for(let d=1;d<=dim;d++) cells.push({date:new Date(y,m,d),out:false});
+    while(cells.length<42){ const nd=cells.length-(startDay+dim)+1; cells.push({date:new Date(y,m+1,nd),out:true}); }
+    return cells;
+  };
+  const isoOf = (d) => { const y=d.getFullYear(), m=("0"+(d.getMonth()+1)).slice(-2), da=("0"+d.getDate()).slice(-2); return y+"-"+m+"-"+da; };
+  const formatMonthLabel = (d) => '<div class="month-year"><span class="year">'+d.getFullYear()+'年</span><span class="month">'+(d.getMonth()+1)+'月</span></div>';
+  const toCircled = (n) => { const c=['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩','⑪','⑫']; return (n>=1&&n<=12)?c[n-1]:String(n); };
+
+  const toggleRegistration = (id) => {
+    if(registrations.has(id)) registrations.delete(id); else registrations.add(id);
+    if(selectedDate){
+      const center=centerSelect.value, district=districtSelect.value;
+      const filtered=EVENTS.filter((ev)=>matchEvent(ev,center,district,selectedBlocks));
+      const iso=isoOf(selectedDate);
+      showDayEvents(selectedDate, filtered.filter(ev=>ev.start===iso));
+    }
+  };
+
+  const showDayEvents = (date, events) => {
+    dayEventsList.innerHTML="";
+    if(!events || !events.length){ dayEventsList.classList.remove("show"); return; }
+    const header=document.createElement("div");
+    header.style.cssText="font-size:20px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #4a5568;";
+    header.textContent=date.getFullYear()+"年"+(date.getMonth()+1)+"月"+date.getDate()+"日";
+    dayEventsList.appendChild(header);
+    events.forEach((ev)=>{
+      const info=badgeInfo(ev); const reg=registrations.has(ev.id);
+      const card=document.createElement("div"); card.className="event-card";
+      card.innerHTML =
+        '<span class="badge '+info.cls+'">'+info.icon+' '+info.label+'</span>'+
+        '<h3 class="event-title">'+ev.title+'</h3>'+
+        '<div class="meta">'+ev.date+'</div>'+
+        '<div class="place">場所: '+ev.place+'</div>'+
+        (ev.detail?'<div class="meta">'+ev.detail+'</div>':'')+
+        '<div class="chips">'+(ev.tag?'<span class="chip">'+ev.tag+'</span>':'')+stateChip(ev)+'</div>'+
+        '<button class="btn-register'+(reg?' registered':'')+'">'+(reg?'✓ 参加申し込み済み':'参加申し込み')+'</button>'+
+        (reg?'<button class="btn-kizuna btn-flow">この後のチェックイン・アンケートへ ›</button>':'');
+      dayEventsList.appendChild(card);
+      card.querySelector(".btn-register").addEventListener("click",()=>{ toggleRegistration(ev.id); renderCalendar(); });
+      const fb=card.querySelector(".btn-flow"); if(fb) fb.addEventListener("click",()=>openFlow(ev));
+    });
+    dayEventsList.classList.add("show");
+    setTimeout(()=>dayEventsList.scrollIntoView({behavior:"smooth",block:"nearest"}),100);
+  };
+
+  const renderCalendar = () => {
+    const center=centerSelect.value, district=districtSelect.value;
+    const filtered=EVENTS.filter((ev)=>matchEvent(ev,center,district,selectedBlocks));
+    const byDay=filtered.reduce((acc,ev)=>{ (acc[ev.start]=acc[ev.start]||[]).push(ev); return acc; },{});
+    monthLabel.innerHTML=formatMonthLabel(currentMonth);
+    calendarGrid.innerHTML="";
+    dayEventsList.classList.remove("show");
+    selectedDate=null;
+    calendarLegend.innerHTML='上段 青字＝案内件数／下段 赤字＝参加予定';
+    ["日","月","火","水","木","金","土"].forEach((w)=>{ const wd=document.createElement("div"); wd.className="weekday"; wd.textContent=w; calendarGrid.appendChild(wd); });
+    buildMonthDays(currentMonth).forEach((cell)=>{
+      const iso=isoOf(cell.date);
+      const dayDiv=document.createElement("div");
+      dayDiv.className="day"+(cell.out?" out":"");
+      dayDiv.innerHTML='<div class="day-num">'+cell.date.getDate()+'</div>';
+      if(!cell.out && byDay[iso] && byDay[iso].length){
+        const de=byDay[iso]; const total=de.length; const regCount=de.filter(ev=>registrations.has(ev.id)).length;
+        const counts=document.createElement("div"); counts.className="day-event-counts";
+        if(total>0){ const b=document.createElement("div"); b.className="event-count-blue"; b.textContent=toCircled(total); counts.appendChild(b); }
+        if(regCount>0){ const r=document.createElement("div"); r.className="event-count-red"; r.textContent=toCircled(regCount); counts.appendChild(r); }
+        dayDiv.appendChild(counts);
+      }
+      if(!cell.out){
+        dayDiv.addEventListener("click",()=>{
+          const prev=document.querySelector(".day.selected"); if(prev) prev.classList.remove("selected");
+          if(selectedDate && isoOf(selectedDate)===iso){ selectedDate=null; dayEventsList.classList.remove("show"); }
+          else { selectedDate=new Date(cell.date); dayDiv.classList.add("selected"); showDayEvents(cell.date, byDay[iso]||[]); }
+        });
+      }
+      calendarGrid.appendChild(dayDiv);
+    });
+  };
+
+  // ===== 申込後フロー（オーバーレイ） =====
+  const overlay=document.getElementById("overlay");
+  const flow={ event:null, answers:{} };
+
+  const showStep = (id) => {
+    document.querySelectorAll(".flow-step").forEach((s)=>s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    overlay.scrollTop=0; window.scrollTo(0,0);
+  };
+  const resetSurvey = () => {
+    flow.answers={};
+    document.querySelectorAll("#step-survey .opt.selected").forEach((o)=>o.classList.remove("selected"));
+    document.getElementById("q2sub").style.display="none";
+    document.getElementById("roleWrap").style.display="none";
+  };
+  function openFlow(ev){
+    flow.event=ev;
+    document.getElementById("ovEvTitle").textContent=ev.title;
+    document.getElementById("ovEvMeta").textContent=ev.date+" / "+ev.place;
+    registrations.add(ev.id);
+    resetSurvey();
+    showStep(checkedIn.has(ev.id)?"step-survey":"step-checkin");
+    overlay.classList.add("open");
+  }
+  function closeFlow(){ overlay.classList.remove("open"); renderEvents(); renderCalendar(); }
+
+  document.getElementById("flowClose1").addEventListener("click",closeFlow);
+  document.getElementById("flowClose2").addEventListener("click",closeFlow);
+  document.getElementById("backToCheckin").addEventListener("click",()=>showStep("step-checkin"));
+  document.getElementById("btnCheckin").addEventListener("click",()=>{ checkedIn.add(flow.event.id); showStep("step-survey"); });
+
+  document.querySelectorAll("#step-survey .opts, #step-survey .toggle").forEach((group)=>{
+    const key=group.getAttribute("data-q");
+    group.querySelectorAll(".opt").forEach((opt)=>{
+      opt.addEventListener("click",()=>{
+        group.querySelectorAll(".opt").forEach((o)=>o.classList.remove("selected"));
+        opt.classList.add("selected");
+        flow.answers[key]=opt.getAttribute("data-val");
+        if(key==="q2") document.getElementById("q2sub").style.display=(opt.getAttribute("data-val")==="はい")?"block":"none";
+        if(key==="method") document.getElementById("roleWrap").style.display=(opt.getAttribute("data-val")==="代理")?"block":"none";
+      });
+    });
+  });
+
+  document.getElementById("btnSubmit").addEventListener("click",()=>{
+    const a=flow.answers;
+    const required=["method","q1","q2","q3","q4","q5","q6","q7","q8"];
+    const missing=required.filter((k)=>a[k]===undefined);
+    if(a.q2==="はい" && a.q2a===undefined) missing.push("q2a");
+    if(missing.length){ alert("未回答の項目があります。最後までお答えください。"); return; }
+    const today=isoOf(new Date());
+    const pid="P001", sid=flow.event.id;
+    const proxy=(a.method==="代理")?"Y":"N";
+    const phq2=parseInt(a.q6,10)+parseInt(a.q7,10);
+    const refer=(phq2>=3)?"Y":"N";
+    const wears=(a.q2==="はい")?(a.q2a||""):"NA";
+    const days=(a.q2==="はい")?(a.q2b!==undefined?a.q2b:"NA"):"NA";
+    const payload={
+      "03_参加記録":{session_id:sid, participant_id:pid, mode:"salon_only", is_first_time_ever:"N", briefing_received:"Y"},
+      "07b_聞こえ記録":{participant_id:pid, session_id:sid, record_date:today, check_type:"routine", wears_today:wears, days_worn_last7:days, remarks_code:"hearing_self_"+a.q1},
+      "07c_受診記録":{participant_id:pid, referral_date:today, ent_visited:a.q3, remarks_code:"アンケート自己申告"},
+      "07d_生活アンケート":{participant_id:pid, session_id:sid, survey_date:today, outings_last7:a.q4, talk_days_last7:a.q5, isolation_score:a.q8},
+      "07e_心理スクリーニング":{participant_id:pid, session_id:sid, screen_date:today, phq2_score:phq2, gds5_score:"NA", proxy_written:proxy, referred_to_consult:refer}
+    };
+    document.getElementById("preview").textContent=JSON.stringify(payload,null,2);
+    document.getElementById("referNotice").style.display=(refer==="Y")?"block":"none";
+    checkedIn.add(sid); surveyed.add(sid);
+    showStep("step-done");
+  });
+
+  // ===== イベント配線 =====
+  centerSelect.addEventListener("change",()=>{ updateDistrictOptions(); renderEvents(); renderCalendar(); });
+  districtSelect.addEventListener("change",()=>{
+    selectedBlocks=["全選択"];
+    if(districtSelect.value==="全選択") blockSelectContainer.style.display="none";
+    else if(centerSelect.value){ blockSelectContainer.style.display="block"; renderBlockOptions(); }
+    renderEvents(); renderCalendar();
+  });
+  applyBtn.addEventListener("click",()=>{ renderEvents(); renderCalendar(); });
+  blockDropdownBtn.addEventListener("click",()=>blockDropdown.classList.toggle("open"));
+  document.addEventListener("click",(e)=>{ if(!blockDropdown.contains(e.target)) blockDropdown.classList.remove("open"); });
+  prevMonth.addEventListener("click",()=>{ currentMonth=new Date(currentMonth.getFullYear(),currentMonth.getMonth()-1,1); renderCalendar(); });
+  nextMonth.addEventListener("click",()=>{ currentMonth=new Date(currentMonth.getFullYear(),currentMonth.getMonth()+1,1); renderCalendar(); });
+  tabs.forEach((tab)=>{
+    tab.addEventListener("click",()=>{
+      tabs.forEach((t)=>t.classList.remove("active")); tab.classList.add("active");
+      if(tab.dataset.tab==="list"){ eventList.style.display="block"; calendarView.style.display="none"; renderEvents(); }
+      else { eventList.style.display="none"; calendarView.style.display="block"; renderCalendar(); }
+    });
+  });
+
+  // ===== 初期化 =====
+  updateDistrictOptions();
+  renderBlockOptions();
+  renderEvents();
+  renderCalendar();
+})();
+</script>
 </body>
-
 </html>
